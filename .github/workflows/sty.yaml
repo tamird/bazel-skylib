@@ -26,3 +26,6 @@ jobs:
           bazel-version: '8.8.1'
           files: |
             lib/paths.bzl
+            rules/directory/providers.bzl
+            rules/directory/private/paths.bzl
+            rules/directory/private/glob.bzl

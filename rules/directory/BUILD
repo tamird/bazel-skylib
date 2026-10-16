@@ -4,6 +4,11 @@ package(default_applicable_licenses = ["//:license"])
 
 licenses(["notice"])
 
+exports_files(
+    ["providers.bzli"],
+    visibility = ["//visibility:public"],
+)
+
 # export bzl files for the documentation
 exports_files(
     glob(["*.bzl"]),
@@ -53,7 +58,10 @@ filegroup(
     name = "distribution",
     srcs = [
         "BUILD",
-    ] + glob(["*.bzl"]),
+    ] + glob([
+        "*.bzl",
+        "*.bzli",
+    ]),
     visibility = [
         "//:__pkg__",
     ],
