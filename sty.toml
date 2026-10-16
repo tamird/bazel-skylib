@@ -1,2 +1,12 @@
 [type-interfaces]
 "lib/paths.bzl" = "lib/paths.bzli"
+
+[rules]
+missing-parameter-annotation = "error"
+missing-return-annotation = "error"
+missing-type-argument = "error"
+unsound-assignment = "error"
+unsound-return-statement = "error"
+explicit-any = "error"
+# Empty list rebinding and zip's variadic fallback remain gradual.
+non-static-type = "ignore"
