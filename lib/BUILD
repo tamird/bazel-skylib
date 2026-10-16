@@ -9,6 +9,8 @@ package(
 
 licenses(["notice"])
 
+exports_files(["paths.bzli"])
+
 # export bzl files for the documentation
 exports_files(
     glob(["*.bzl"]),
