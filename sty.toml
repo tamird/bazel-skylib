@@ -1,3 +1,6 @@
+[analysis]
+strict-generic-narrowing = true
+
 [type-interfaces]
 "lib/paths.bzl" = "lib/paths.bzli"
 "rules/directory/providers.bzl" = "rules/directory/providers.bzli"
