@@ -9,7 +9,10 @@ package(
 
 licenses(["notice"])
 
-exports_files(["paths.bzli"])
+exports_files([
+    "paths.bzli",
+    "shell.bzli",
+])
 
 # export bzl files for the documentation
 exports_files(

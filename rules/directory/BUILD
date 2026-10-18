@@ -5,7 +5,12 @@ package(default_applicable_licenses = ["//:license"])
 licenses(["notice"])
 
 exports_files(
-    ["providers.bzli"],
+    [
+        "directory.bzli",
+        "glob.bzli",
+        "providers.bzli",
+        "subdirectory.bzli",
+    ],
     visibility = ["//visibility:public"],
 )
 
