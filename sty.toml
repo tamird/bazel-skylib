@@ -2,6 +2,7 @@
 strict-generic-narrowing = true
 
 [type-interfaces]
+"lib/collections.bzl" = "lib/collections.bzli"
 "lib/paths.bzl" = "lib/paths.bzli"
 "lib/shell.bzl" = "lib/shell.bzli"
 "rules/common_settings.bzl" = "rules/common_settings.bzli"
@@ -22,4 +23,5 @@ explicit-any = "error"
 non-static-type = "error"
 blanket-ignore-comment = "error"
 possibly-unresolved-reference = "error"
+possibly-missing-attribute = "error"
 division-by-zero = "error"

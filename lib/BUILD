@@ -10,6 +10,7 @@ package(
 licenses(["notice"])
 
 exports_files([
+    "collections.bzli",
     "paths.bzli",
     "shell.bzli",
 ])
