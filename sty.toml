@@ -2,6 +2,7 @@
 strict-generic-narrowing = true
 
 [type-interfaces]
+"rules/private/write_file_private.bzl" = "rules/private/write_file_private.bzli"
 "lib/collections.bzl" = "lib/collections.bzli"
 "lib/paths.bzl" = "lib/paths.bzli"
 "lib/shell.bzl" = "lib/shell.bzli"
