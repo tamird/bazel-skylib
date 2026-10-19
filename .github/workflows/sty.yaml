@@ -20,19 +20,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: tamird/sty@4e45bec8f468ce76b0a1dfeb98028a11cd8610cd
+      - uses: tamird/sty@f9027c84126ec3ed1d498b36fe6e407a50e87506
         with:
           audit-loads: true
           bazel-version: '8.8.1'
-          files: |
-            lib/collections.bzl
-            lib/paths.bzl
-            lib/shell.bzl
-            rules/common_settings.bzl
-            rules/private/write_file_private.bzl
-            rules/directory/providers.bzl
-            rules/directory/private/paths.bzl
-            rules/directory/private/glob.bzl
-            rules/directory/directory.bzl
-            rules/directory/glob.bzl
-            rules/directory/subdirectory.bzl
