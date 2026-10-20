@@ -16,6 +16,7 @@ exports_files([
     "shell.bzli",
     "structs.bzli",
     "subpackages.bzli",
+    "types.bzli",
     "versions.bzli",
 ])
 

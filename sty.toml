@@ -10,6 +10,7 @@ require-valid-suppressions = true
 "lib/shell.bzl" = "lib/shell.bzli"
 "lib/structs.bzl" = "lib/structs.bzli"
 "lib/subpackages.bzl" = "lib/subpackages.bzli"
+"lib/types.bzl" = "lib/types.bzli"
 "lib/versions.bzl" = "lib/versions.bzli"
 "rules/common_settings.bzl" = "rules/common_settings.bzli"
 "rules/diff_test.bzl" = "rules/diff_test.bzli"

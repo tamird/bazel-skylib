@@ -13,6 +13,7 @@ versions = ["1.9.2"]
 "lib/shell.bzl" = "lib/shell.bzli"
 "lib/structs.bzl" = "lib/structs.bzli"
 "lib/subpackages.bzl" = "lib/subpackages.bzli"
+"lib/types.bzl" = "lib/types.bzli"
 "lib/versions.bzl" = "lib/versions.bzli"
 "rules/directory/providers.bzl" = "rules/directory/providers.bzli"
 "rules/directory/private/paths.bzl" = "rules/directory/private/paths.bzli"
