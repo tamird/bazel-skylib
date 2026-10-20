@@ -13,6 +13,7 @@ exports_files([
     "collections.bzli",
     "paths.bzli",
     "shell.bzli",
+    "versions.bzli",
 ])
 
 # export bzl files for the documentation
