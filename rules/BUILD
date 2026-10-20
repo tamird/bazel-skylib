@@ -7,7 +7,12 @@ package(
 
 licenses(["notice"])
 
-exports_files(["common_settings.bzli"])
+exports_files([
+    "common_settings.bzli",
+    "diff_test.bzli",
+    "native_binary.bzli",
+    "select_file.bzli",
+])
 
 bzl_library(
     name = "analysis_test",
