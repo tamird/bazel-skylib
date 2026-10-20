@@ -15,6 +15,7 @@
 """A test verifying other targets build as part of a `bazel test`"""
 
 def _empty_test_impl(ctx):
+    # type: (...) -> list[DefaultInfo]
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
     extension = ".bat" if is_windows else ".sh"
     content = "exit 0" if is_windows else "#!/usr/bin/env bash\nexit 0"
@@ -41,6 +42,7 @@ _empty_test = rule(
 )
 
 def build_test(name, targets, **kwargs):
+    # type: (str, Collection[str | Label], **Unpack[KeywordArgs[_empty_test, "name", "data"]]) -> None
     """Test rule checking that other targets build.
 
     This works not by an instance of this test failing, but instead by

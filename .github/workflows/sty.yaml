@@ -26,6 +26,7 @@ jobs:
           bazel-version: '8.8.1'
           files: |
             distribution/distribution.bzl
+            rules/build_test.bzl
             rules/copy_directory.bzl
             rules/copy_file.bzl
             rules/write_file.bzl
