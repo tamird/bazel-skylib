@@ -15,6 +15,7 @@ versions = ["1.9.2"]
 "lib/collections.bzl" = "lib/collections.bzli"
 "lib/modules.bzl" = "lib/modules.bzli"
 "lib/paths.bzl" = "lib/paths.bzli"
+"lib/selects.bzl" = "lib/selects.bzli"
 "lib/shell.bzl" = "lib/shell.bzli"
 "lib/structs.bzl" = "lib/structs.bzli"
 "lib/subpackages.bzl" = "lib/subpackages.bzli"

@@ -13,6 +13,7 @@ exports_files([
     "collections.bzli",
     "modules.bzli",
     "paths.bzli",
+    "selects.bzli",
     "shell.bzli",
     "structs.bzli",
     "subpackages.bzli",
