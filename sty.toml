@@ -23,6 +23,7 @@ require-valid-suppressions = true
 "rules/diff_test.bzl" = "rules/diff_test.bzli"
 "rules/expand_template.bzl" = "rules/expand_template.bzli"
 "rules/native_binary.bzl" = "rules/native_binary.bzli"
+"rules/run_binary.bzl" = "rules/run_binary.bzli"
 "rules/select_file.bzl" = "rules/select_file.bzli"
 "rules/directory/providers.bzl" = "rules/directory/providers.bzli"
 "rules/directory/private/paths.bzl" = "rules/directory/private/paths.bzli"

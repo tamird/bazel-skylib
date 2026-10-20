@@ -13,6 +13,7 @@ exports_files([
     "diff_test.bzli",
     "expand_template.bzli",
     "native_binary.bzli",
+    "run_binary.bzli",
     "select_file.bzli",
 ])
 
