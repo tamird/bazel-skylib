@@ -1,0 +1,3 @@
+"""Contract for expanding a template."""
+
+def _expand_template_impl(ctx) -> None: ...

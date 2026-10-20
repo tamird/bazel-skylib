@@ -8,8 +8,10 @@ package(
 licenses(["notice"])
 
 exports_files([
+    "analysis_test.bzli",
     "common_settings.bzli",
     "diff_test.bzli",
+    "expand_template.bzli",
     "native_binary.bzli",
     "select_file.bzli",
 ])
