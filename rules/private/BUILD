@@ -9,6 +9,7 @@ exports_files(
     [
         "copy_common.bzli",
         "copy_directory_private.bzli",
+        "copy_file_private.bzli",
         "write_file_private.bzli",
     ],
     visibility = ["//visibility:public"],
