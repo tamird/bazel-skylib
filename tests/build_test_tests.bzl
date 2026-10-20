@@ -40,4 +40,5 @@ def build_test_test_suite():
     build_test(
         name = "build_test__test",
         targets = [":build_test__build_target"],
+        tags = depset(["build_test_input"]),
     )
