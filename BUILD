@@ -21,6 +21,7 @@ exports_files([
     "LICENSE",
     "MODULE.bazel",
     "WORKSPACE",
+    "bzl_library.bzli",
     "stubs.toml",
     "sty.toml",
 ])
@@ -33,7 +34,10 @@ filegroup(
         "//lib:test_deps",
         "//rules:test_deps",
         "//toolchains/unittest:test_deps",
-    ] + glob(["*.bzl"]),
+    ] + glob([
+        "*.bzl",
+        "*.bzli",
+    ]),
 )
 
 bzl_library(
@@ -97,5 +101,8 @@ filegroup(
         "//rules/directory/private:distribution",
         "//rules/private:distribution",
         "//toolchains/unittest:distribution",
-    ] + glob(["*.bzl"]),
+    ] + glob([
+        "*.bzl",
+        "*.bzli",
+    ]),
 )
