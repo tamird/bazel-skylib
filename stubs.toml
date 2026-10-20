@@ -6,6 +6,8 @@ module = "bazel_skylib"
 versions = ["1.9.2"]
 
 [files]
+"rules/private/copy_common.bzl" = "rules/private/copy_common.bzli"
+"rules/private/copy_directory_private.bzl" = "rules/private/copy_directory_private.bzli"
 "rules/private/write_file_private.bzl" = "rules/private/write_file_private.bzli"
 "lib/collections.bzl" = "lib/collections.bzli"
 "lib/modules.bzl" = "lib/modules.bzli"

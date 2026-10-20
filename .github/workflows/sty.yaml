@@ -25,6 +25,6 @@ jobs:
           audit-loads: true
           bazel-version: '8.8.1'
           files: |
-            rules/private/copy_common.bzl
+            rules/copy_directory.bzl
             rules/write_file.bzl
             version.bzl

@@ -6,7 +6,11 @@ package(default_applicable_licenses = ["//:license"])
 licenses(["notice"])
 
 exports_files(
-    ["write_file_private.bzli"],
+    [
+        "copy_common.bzli",
+        "copy_directory_private.bzli",
+        "write_file_private.bzli",
+    ],
     visibility = ["//visibility:public"],
 )
 
