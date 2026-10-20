@@ -14,8 +14,6 @@
 
 """A test verifying other targets build as part of a `bazel test`"""
 
-load("//lib:new_sets.bzl", "sets")
-
 def _empty_test_impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
     extension = ".bat" if is_windows else ".sh"
@@ -80,7 +78,7 @@ def build_test(name, targets, **kwargs):
         fail("data is not supported on a build_test()", "data")
 
     # Remove any duplicate test targets.
-    targets = sets.to_list(sets.make(targets))
+    targets = {target: None for target in targets}.keys()
 
     # Use a genrule to ensure the targets are built (works because it forces
     # the outputs of the other rules on as data for the genrule)
