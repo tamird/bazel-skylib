@@ -40,6 +40,7 @@ def _as_extension(macro, doc = None):
     """
 
     def _ext_impl(module_ctx):
+        # type: (module_ctx) -> extension_metadata | None
         macro()
 
         # Setting `reproducible` is safe since `macro`, as a function without parameters, must be
