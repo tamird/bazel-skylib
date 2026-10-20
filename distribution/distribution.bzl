@@ -14,19 +14,18 @@
 
 """Helper utilities for generating distribution tarballs."""
 
-def remove_internal_only(name, src, out, **kwargs):
+def remove_internal_only(name, src, out):
+    # type: (str, str | Label, str | Label) -> None
     """Removes '### INTERNAL ONLY' line and all lines below from a file.
 
     Args:
         name: Name of the rule.
         src: File to process.
         out: Path of the output file.
-        **kwargs: further keyword arguments.
     """
     native.genrule(
         name = name,
         srcs = [src],
         outs = [out],
         cmd = "sed -e '/### INTERNAL ONLY/,$$d' $< >$@",
-        **kwargs
     )
