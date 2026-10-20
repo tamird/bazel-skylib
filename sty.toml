@@ -7,6 +7,7 @@ require-valid-suppressions = true
 "lib/collections.bzl" = "lib/collections.bzli"
 "lib/paths.bzl" = "lib/paths.bzli"
 "lib/shell.bzl" = "lib/shell.bzli"
+"lib/structs.bzl" = "lib/structs.bzli"
 "lib/versions.bzl" = "lib/versions.bzli"
 "rules/common_settings.bzl" = "rules/common_settings.bzli"
 "rules/directory/providers.bzl" = "rules/directory/providers.bzli"
