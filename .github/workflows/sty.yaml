@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - uses: tamird/sty@66ba37a5d8a0e9b35da9c7aa071c1285c3a88f93
+      - uses: tamird/sty@aca2def8c9f67c4477e51b8261d10ad2f5784d43
         with:
           audit-loads: true
           bazel-version: '8.8.1'
