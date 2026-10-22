@@ -12,6 +12,7 @@ licenses(["notice"])
 exports_files([
     "collections.bzli",
     "modules.bzli",
+    "new_sets.bzli",
     "paths.bzli",
     "selects.bzli",
     "shell.bzli",

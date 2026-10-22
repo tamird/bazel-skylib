@@ -9,6 +9,7 @@ format-version = 1
 "rules/private/write_file_private.bzl" = "rules/private/write_file_private.bzli"
 "lib/collections.bzl" = "lib/collections.bzli"
 "lib/modules.bzl" = "lib/modules.bzli"
+"lib/new_sets.bzl" = "lib/new_sets.bzli"
 "lib/paths.bzl" = "lib/paths.bzli"
 "lib/selects.bzl" = "lib/selects.bzli"
 "lib/shell.bzl" = "lib/shell.bzli"
