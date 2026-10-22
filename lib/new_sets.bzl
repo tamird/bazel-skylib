@@ -23,8 +23,6 @@
   `types.is_set()` method in types.bzl.
 """
 
-load(":dicts.bzl", "dicts")
-
 def _make(elements = None):
     """Creates a new set.
 
@@ -187,7 +185,10 @@ def _union(*args):
     Returns:
       The set union of all sets in `*args`.
     """
-    return struct(_values = dicts.add(*[s._values for s in args]))
+    values = {}
+    for s in args:
+        values.update(s._values)
+    return struct(_values = values)
 
 def _difference(a, b):
     """Returns the elements in `a` that are not in `b`.
