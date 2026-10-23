@@ -28,7 +28,7 @@ def _common_impl(ctx: _WriteContext, is_executable: bool) -> list[DefaultInfo]: 
 def _impl(ctx: _WriteContext) -> list[DefaultInfo]: ...
 def _ximpl(ctx: _WriteContext) -> list[DefaultInfo]: ...
 
-type _Content = Iterable[str] | depset[str] | select[Iterable[str] | depset[str] | None, object] | None
+type _Content = Collection[str] | depset[str] | select[Collection[str] | depset[str] | None, object] | None
 type _Newline = Literal["auto", "unix", "windows", ""] | select[Literal["auto", "unix", "windows"], object] | None
 
 @overload

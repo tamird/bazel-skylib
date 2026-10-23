@@ -2,10 +2,10 @@
 
 type _Condition = str | Label
 type _Conditions = Sequence[_Condition]
-type _Visibility = Iterable[_Condition] | depset[_Condition] | None
+type _Visibility = Collection[_Condition] | depset[_Condition] | None
 
 class _ConditionEntries[V](Protocol):
-    def items(self) -> Iterable[tuple[_Condition | tuple[_Condition, ...], V]]: ...
+    def items(self) -> Collection[tuple[_Condition | tuple[_Condition, ...], V]]: ...
 
 @overload
 def _with_or[T](input_dict: _ConditionEntries[list[T]], no_match_error: str = ...) -> select[list[T], Literal["list"]]: ...
