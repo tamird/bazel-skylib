@@ -1,6 +1,6 @@
 """Values and implementations for the common build settings."""
 
-def BuildSettingInfo(*, value: object) -> record[{"value": object}]: ...
+def BuildSettingInfo[T = object](*, value: T) -> record[{"value": T}]: ...
 
 type _VariableAttrs = struct[{"make_variable": str}, ...]
 type _StringAttrs = struct[{"make_variable": str, "values": list[str]}, ...]
