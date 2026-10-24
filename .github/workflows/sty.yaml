@@ -26,8 +26,13 @@ jobs:
           bazel-version: '8.8.1'
           files: |
             distribution/distribution.bzl
+            lib.bzl
+            lib/old_sets.bzl
+            lib/sets.bzl
             rules/build_test.bzl
             rules/copy_directory.bzl
             rules/copy_file.bzl
             rules/write_file.bzl
+            skylark_library.bzl
+            tests/bzl_library/testdata
             version.bzl
