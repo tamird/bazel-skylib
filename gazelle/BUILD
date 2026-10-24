@@ -43,6 +43,7 @@ filegroup(
         "WORKSPACE.bzlmod",
         "setup.bzl",
         "workspace.bzl",
+        "workspace.bzli",
     ],
     visibility = ["//visibility:public"],
 )

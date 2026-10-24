@@ -1,0 +1,37 @@
+"""Contracts for copying files."""
+
+type _Source = str | Label | select[str | Label, object]
+
+def copy_cmd(ctx: ctx[object, object], src: File, dst: File) -> None: ...
+def copy_bash(ctx: ctx[object, object], src: File, dst: File) -> None: ...
+def _copy_file_impl(ctx) -> list[DefaultInfo]: ...
+
+# The macro chooses the executable rule before Bazel resolves select().
+@overload
+def copy_file(
+    name: str,
+    src: _Source,
+    out: str | Label,
+    is_executable: Literal[True] | select[Literal[True], object],
+    allow_symlink: bool | select[bool, object] = ...,
+    **kwargs: Unpack[CommonExecutableRuleAttrs],
+) -> None: ...
+
+@overload
+def copy_file(
+    name: str,
+    src: _Source,
+    out: str | Label,
+    is_executable: bool = ...,
+    allow_symlink: bool | select[bool, object] = ...,
+    **kwargs: Unpack[CommonRuleAttrs],
+) -> None: ...
+
+def copy_file(
+    name: str,
+    src: _Source,
+    out: str | Label,
+    is_executable: bool | select[Literal[True], object] = ...,
+    allow_symlink: bool | select[bool, object] = ...,
+    **kwargs: Unpack[CommonExecutableRuleAttrs],
+) -> None: ...

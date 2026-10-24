@@ -1,0 +1,45 @@
+name: Starlark types
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sty:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: tamird/sty@036b2399305b8530d301075c04f5c918e6a6959a
+        with:
+          audit-loads: true
+          bazel-version: '8.8.1'
+          files: |
+            distribution/distribution.bzl
+            lib.bzl
+            lib/old_sets.bzl
+            lib/sets.bzl
+            rules/build_test.bzl
+            rules/copy_directory.bzl
+            rules/copy_file.bzl
+            rules/write_file.bzl
+            skylark_library.bzl
+            tests/bzl_library/testdata
+            version.bzl
+      - name: Check Gazelle workspace helpers
+        uses: tamird/sty@036b2399305b8530d301075c04f5c918e6a6959a
+        with:
+          working-directory: gazelle
+          artifact-name: sty-gazelle
+          audit-loads: true
+          bazel-version: '8.8.1'

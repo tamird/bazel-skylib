@@ -1,0 +1,3 @@
+"""Contract for running a binary as a build action."""
+
+def _run_binary_impl(ctx) -> DefaultInfo: ...

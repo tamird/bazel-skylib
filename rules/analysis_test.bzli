@@ -1,0 +1,3 @@
+"""Contract for verifying target analysis."""
+
+def _analysis_test_impl(ctx) -> list[AnalysisTestResultInfo]: ...

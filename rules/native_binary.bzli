@@ -1,0 +1,3 @@
+"""Contract for wrapping a prebuilt executable."""
+
+def _impl_rule(ctx) -> list[DefaultInfo | RunEnvironmentInfo]: ...

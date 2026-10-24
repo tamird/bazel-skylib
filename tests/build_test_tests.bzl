@@ -39,5 +39,6 @@ def build_test_test_suite():
     # Wrap a build test around the target.
     build_test(
         name = "build_test__test",
-        targets = [":build_test__build_target"],
+        targets = [":build_test__build_target", ":build_test__build_target"],
+        tags = depset(["build_test_input"]),
     )

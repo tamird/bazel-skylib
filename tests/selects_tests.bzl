@@ -91,7 +91,7 @@ def _create_config_setting_groups():
     )
     selects.config_setting_group(
         name = "1_or_2_or_3",
-        match_any = [":condition1", ":condition2", ":condition3"],
+        match_any = [Label(":condition1"), ":condition2", ":condition3"],
     )
     selects.config_setting_group(
         name = "1_or_nothing_else",

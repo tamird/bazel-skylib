@@ -1,0 +1,3 @@
+"""Contract for selecting a target output file."""
+
+def _impl(ctx) -> list[DefaultInfo]: ...

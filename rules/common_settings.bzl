@@ -48,7 +48,7 @@ def _is_valid_make_variable_char(c):
     return c == "_" or c.isdigit() or (c.isalpha() and c.isupper())
 
 def _get_template_variable_info(ctx):
-    make_variable = getattr(ctx.attr, "make_variable", None)
+    make_variable = ctx.attr.make_variable
     if not make_variable:
         return []
 
@@ -65,6 +65,9 @@ def _impl(ctx):
     return [
         BuildSettingInfo(value = ctx.build_setting_value),
     ] + _get_template_variable_info(ctx)
+
+def _simple_impl(ctx):
+    return BuildSettingInfo(value = ctx.build_setting_value)
 
 int_flag = rule(
     implementation = _impl,
@@ -87,7 +90,7 @@ int_setting = rule(
 )
 
 bool_flag = rule(
-    implementation = _impl,
+    implementation = _simple_impl,
     build_setting = config.bool(flag = True),
     attrs = {
         "scope": _SCOPE_ATTR,
@@ -96,7 +99,7 @@ bool_flag = rule(
 )
 
 bool_setting = rule(
-    implementation = _impl,
+    implementation = _simple_impl,
     build_setting = config.bool(),
     attrs = {
         "scope": _SCOPE_ATTR,
@@ -105,7 +108,7 @@ bool_setting = rule(
 )
 
 string_list_flag = rule(
-    implementation = _impl,
+    implementation = _simple_impl,
     build_setting = config.string_list(flag = True),
     attrs = {
         "scope": _SCOPE_ATTR,
@@ -113,11 +116,8 @@ string_list_flag = rule(
     doc = "A string list-typed build setting that can be set on the command line",
 )
 
-def _repeatable_string_flag_impl(ctx):
-    return BuildSettingInfo(value = ctx.build_setting_value)
-
 repeatable_string_flag = rule(
-    implementation = _repeatable_string_flag_impl,
+    implementation = _simple_impl,
     build_setting = config.string_list(
         flag = True,
         repeatable = True,
@@ -129,7 +129,7 @@ repeatable_string_flag = rule(
 )
 
 string_list_setting = rule(
-    implementation = _impl,
+    implementation = _simple_impl,
     build_setting = config.string_list(),
     attrs = {
         "scope": _SCOPE_ATTR,
