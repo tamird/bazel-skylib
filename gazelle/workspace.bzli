@@ -1,0 +1,3 @@
+"""Register the Gazelle plugin repository dependencies."""
+
+def bazel_skylib_gazelle_plugin_workspace() -> None: ...

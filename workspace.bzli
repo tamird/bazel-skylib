@@ -1,0 +1,3 @@
+"""Register Skylib repository dependencies and test toolchains."""
+
+def bazel_skylib_workspace() -> None: ...

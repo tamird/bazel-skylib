@@ -23,7 +23,6 @@ exports_files([
     "WORKSPACE",
     "bzl_library.bzli",
     "stubs.toml",
-    "sty.toml",
 ])
 
 filegroup(
@@ -94,7 +93,6 @@ filegroup(
         "LICENSE",
         "WORKSPACE.bzlmod",
         "stubs.toml",
-        "sty.toml",
         "//lib:distribution",
         "//rules:distribution",
         "//rules/directory:distribution",

@@ -36,3 +36,10 @@ jobs:
             skylark_library.bzl
             tests/bzl_library/testdata
             version.bzl
+      - name: Check Gazelle workspace helpers
+        uses: tamird/sty@036b2399305b8530d301075c04f5c918e6a6959a
+        with:
+          working-directory: gazelle
+          artifact-name: sty-gazelle
+          audit-loads: true
+          bazel-version: '8.8.1'
