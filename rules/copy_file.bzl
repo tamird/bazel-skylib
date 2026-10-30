@@ -17,8 +17,8 @@
 native.genrule() is sometimes used to copy files (often wishing to rename them).
 The 'copy_file' rule does this with a simpler interface than genrule.
 
-The rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command
-on Windows (no Bash is required).
+When available, Bazel copies ordinary files without a shell. Other hard copies use
+cmd.exe on Windows and a shell with cp on other platforms.
 """
 
 load(

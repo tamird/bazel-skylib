@@ -14,9 +14,8 @@
 
 """Implementation of copy_file macro and underlying rules.
 
-These rules copy a file to another location using Bash (on Linux/macOS) or
-cmd.exe (on Windows). '_copy_xfile' marks the resulting file executable,
-'_copy_file' does not.
+These rules copy a file to another location. '_copy_xfile' marks the resulting
+file executable, '_copy_file' does not.
 """
 
 load(":copy_common.bzl", "OsInfo")
@@ -66,6 +65,10 @@ def _copy_file_impl(ctx):
             target_file = ctx.file.src,
             is_executable = ctx.attr.is_executable,
         )
+    elif (hasattr(ctx.actions, "copy") and not ctx.attr.is_executable and
+          not ctx.file.src.is_directory and not ctx.file.src.is_symlink):
+        # The native action accepts regular files and has no executable-mode option.
+        ctx.actions.copy(output = ctx.outputs.out, src = ctx.file.src)
     elif ctx.attr._exec_is_windows[OsInfo].is_windows:
         copy_cmd(ctx, ctx.file.src, ctx.outputs.out)
     else:
@@ -112,7 +115,7 @@ def copy_file(name, src, out, is_executable = False, allow_symlink = False, **kw
 
     `native.genrule()` is sometimes used to copy files (often wishing to rename them). The 'copy_file' rule does this with a simpler interface than genrule.
 
-    This rule uses a Bash command on Linux/macOS/non-Windows, and a cmd.exe command on Windows (no Bash is required).
+    When available, Bazel copies non-executable outputs from ordinary files without a shell. Other hard copies use cmd.exe on Windows and a shell with cp on other platforms.
 
     Args:
       name: Name of the rule.
