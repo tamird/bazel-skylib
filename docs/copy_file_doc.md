@@ -5,8 +5,9 @@ A rule that copies a file to another place.
 native.genrule() is sometimes used to copy files (often wishing to rename them).
 The 'copy_file' rule does this with a simpler interface than genrule.
 
-When available, Bazel copies ordinary files without a shell. Other hard copies use
-cmd.exe on Windows and a shell with cp on other platforms.
+On Bazel versions with a native copy action, the rule uses it for hard copies
+of regular files when is_executable is False. Other hard copies use cmd.exe on
+Windows and a shell with cp on other platforms.
 
 <a id="copy_file"></a>
 
@@ -22,7 +23,7 @@ Copies a file to another location.
 
 `native.genrule()` is sometimes used to copy files (often wishing to rename them). The 'copy_file' rule does this with a simpler interface than genrule.
 
-When available, Bazel copies non-executable outputs from ordinary files without a shell. Other hard copies use cmd.exe on Windows and a shell with cp on other platforms.
+On Bazel versions with a native copy action, the rule uses it for hard copies of regular files when is_executable is False. Other hard copies use cmd.exe on Windows and a shell with cp on other platforms.
 
 
 **PARAMETERS**
