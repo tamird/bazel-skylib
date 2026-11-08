@@ -27,28 +27,28 @@ def _empty_test_impl(ctx):
         content = content,
     )
 
-    return [DefaultInfo(
-        files = depset([executable]),
-        executable = executable,
-        runfiles = ctx.runfiles(files = ctx.files.data),
-    )]
+    # Build and test requests include the default output group. Keep the
+    # checked files separate from the executable and its runfiles.
+    return [
+        DefaultInfo(
+            files = depset([executable]),
+            executable = executable,
+            runfiles = ctx.runfiles(),
+        ),
+        OutputGroupInfo(default = depset(transitive = [
+            target[DefaultInfo].files
+            for target in ctx.attr.targets
+        ])),
+    ]
 
 _empty_test = rule(
     implementation = _empty_test_impl,
     attrs = {
-        "data": attr.label_list(allow_files = True),
+        "targets": attr.label_list(allow_files = True),
         "_windows_constraint": attr.label(default = "@platforms//os:windows"),
     },
     test = True,
 )
-
-_GENRULE_ATTRS = [
-    "compatible_with",
-    "exec_compatible_with",
-    "restricted_to",
-    "tags",
-    "target_compatible_with",
-]
 
 def build_test(name, targets, **kwargs):
     """Test rule checking that other targets build.
@@ -82,45 +82,9 @@ def build_test(name, targets, **kwargs):
     # Remove any duplicate test targets.
     targets = sets.to_list(sets.make(targets))
 
-    # Use a genrule to ensure the targets are built (works because it forces
-    # the outputs of the other rules on as data for the genrule)
-
-    # Split into batches to hopefully avoid things becoming so large they are
-    # too much for a remote execution set up.
-    batch_size = max(1, len(targets) // 100)
-
-    # Pull a few args over from the test to the genrule.
-    genrule_args = {k: kwargs.get(k) for k in _GENRULE_ATTRS if k in kwargs}
-
-    # Only the test target should be used to determine whether or not the deps
-    # are built. Tagging the genrule targets as manual accomplishes this by
-    # preventing them from being picked up by recursive build patterns (`//...`).
-    genrule_tags = genrule_args.pop("tags", [])
-    if "manual" not in genrule_tags:
-        genrule_tags = genrule_tags + ["manual"]
-
-    # Pass an output from the genrules as data to a shell test to bundle
-    # it all up in a test.
-    test_data = []
-
-    for idx, batch in enumerate([targets[i:i + batch_size] for i in range(0, len(targets), batch_size)]):
-        full_name = "{name}_{idx}__deps".format(name = name, idx = idx)
-        test_data.append(full_name)
-        native.genrule(
-            name = full_name,
-            srcs = batch,
-            outs = [full_name + ".out"],
-            testonly = 1,
-            visibility = ["//visibility:private"],
-            cmd = "touch $@",
-            cmd_bat = "type nul > $@",
-            tags = genrule_tags,
-            **genrule_args
-        )
-
     _empty_test(
         name = name,
-        data = test_data,
+        targets = targets,
         size = kwargs.pop("size", "small"),  # Default to small for test size
         **kwargs
     )
