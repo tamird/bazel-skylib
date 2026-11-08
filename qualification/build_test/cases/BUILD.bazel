@@ -1,0 +1,12 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//:checks.bzl", "broken", "consumer_test", "inspect", "outputs", "single")
+
+package(default_testonly = True)
+[outputs(name = "checked_{}".format(i), count = 2 if i == 0 else 1, tags = ["manual"]) for i in range(16)]
+broken(name = "broken", tags = ["manual"])
+build_test(name = "passes", targets = [":checked_{}".format(i) for i in range(16)] + [":checked_0"])
+build_test(name = "fails", targets = [":broken"], tags = ["manual"])
+test_suite(name = "broken_suite", tests = [":fails"], tags = ["manual"])
+single(name = "requires_one", src = ":passes", tags = ["manual"])
+consumer_test(name = "inherits_runfiles", source = ":fails", tags = ["manual"])
+inspect(name = "inspect_passes", source = ":passes", tags = ["manual"])

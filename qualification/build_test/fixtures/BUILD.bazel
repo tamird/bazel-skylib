@@ -1,0 +1,2 @@
+load("//:checks.bzl", "outputs")
+outputs(name = "public", visibility = ["//visibility:public"])

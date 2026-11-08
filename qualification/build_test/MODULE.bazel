@@ -1,0 +1,5 @@
+module(name = "build_test_probe")
+bazel_dep(name = "bazel_skylib", version = "1.9.2")
+bazel_dep(name = "platforms", version = "0.0.11")
+local_path_override(module_name = "bazel_skylib", path = "../..")
+bazel_dep(name = "rules_cc", version = "0.0.17", dev_dependency = True)

@@ -1,0 +1,9 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+load("//:checks.bzl", "broken", "outputs")
+
+package(default_testonly = True)
+outputs(name = "checked", tags = ["manual"])
+broken(name = "broken", tags = ["manual"])
+build_test(name = "selected", targets = [":checked"])
+build_test(name = "excluded_tag", targets = [":broken"], tags = ["omit-me"])
+build_test(name = "excluded_platform", targets = [":broken"], target_compatible_with = ["@platforms//:incompatible"])
