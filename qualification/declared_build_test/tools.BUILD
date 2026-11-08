@@ -1,0 +1,8 @@
+load("@bazel_skylib//rules:native_binary.bzl", "native_binary")
+package(default_visibility = ["//visibility:public"])
+exports_files(["defs.bzl"])
+config_setting(name = "x86", constraint_values = ["@platforms//os:linux", "@platforms//cpu:x86_64"])
+config_setting(name = "arm", constraint_values = ["@platforms//os:linux", "@platforms//cpu:aarch64"])
+platform(name = "arm64", constraint_values = ["@platforms//os:linux", "@platforms//cpu:aarch64"])
+alias(name = "coreutils", actual = select({":x86": "@coreutils_linux_amd64//:coreutils", ":arm": "@coreutils_linux_arm64//:coreutils"}))
+native_binary(name = "touch", src = ":coreutils", out = "applets/touch")

@@ -1,0 +1,84 @@
+name: Check declared build_test tools and marker propagation
+on:
+  push:
+    branches: [qualification/skylib-declared-marker-and-runner]
+permissions: {}
+jobs:
+  linux:
+    if: github.repository == 'tamird/bazel-skylib' && github.actor == github.repository_owner && github.event.created && !github.event.deleted && github.run_attempt == 1
+    runs-on: ubuntu-22.04
+    timeout-minutes: 78
+    steps:
+      - name: Bind both supplier sources and the public Bazel clients
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          w="$RUNNER_TEMP/skylib-build-test"
+          mkdir -m755 "$w" "$w/evidence"
+          echo '{"complete":false,"stage":"setup"}' > "$w/evidence/result.json"
+          previous=966a5570b6d8c02b5cd9c92f780bf792d6540a31
+          git init -q .
+          git fetch -q --no-tags --no-auto-maintenance --depth=3 https://github.com/tamird/bazel-skylib.git "$GITHUB_SHA" "$previous"
+          git checkout -q --detach "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = e5b0424e0c72d44c7933b5ce17888fc3a201222e
+          test "$(git rev-parse HEAD^^)" = a920cdfe02154b916b493b4ffdd08087f0498fc7
+          test "$(git rev-parse 'HEAD^^{tree}')" = b57b98383675ac6569188aea3cbae0a4823a647b
+          test "$(git rev-parse HEAD^:rules/build_test.bzl)" = ec1263275d355a9a8863b84329bc067fd40dd595
+          test "$(git rev-parse HEAD^:rules/BUILD)" = a255b2ef22a0c338184ec224d56dc9fa80eb32b8
+          test "$(git diff --name-only HEAD^^ HEAD^ | paste -sd, -)" = rules/BUILD,rules/build_test.bzl
+          git diff --exit-code HEAD^ HEAD -- . ':!qualification/declared_build_test' ':!.github/workflows/build-test-qualified.yml'
+          registry=c3569a60dc1836ac6fad05e86d7951866c796b4f
+          assets=7ea7ebc29e63bf98bc221f8419a34c6cb57e7003
+          for spec in "$registry tldk_public_inputs.py tldk_public_inputs.py 1f3f7d4d75810ad60941772776e01f3b71b3b171" "$assets recvbuf_deps.py public_assets.py 9a3f571087a1438113a3a067c300e26fcb0ca9e8"; do
+            read -r sha src dest blob <<< "$spec"
+            curl -qfsSL --max-time 45 --retry 2 "https://raw.githubusercontent.com/tamird/gvisor/$sha/.github/qualification/$src" -o "$w/$dest"
+            test "$(git hash-object "$w/$dest")" = "$blob"
+          done
+          for spec in '7.7.0 fe7e799cbc9140f986b063e06800a3d4c790525075c877d00a7112669824acbf' '8.5.0 18255229d933b8da10151bdef223a302744296b09af8af1988c93faa1ea3c71f' '9.3.1 7f775b54bbec487efaf0f49ccda1d2ed02cd34f582edfdd6aeeec76e39ef585c'; do
+            read -r version sha <<< "$spec"
+            curl -qfsSL --max-time 90 --retry 2 "https://releases.bazel.build/$version/release/bazel-$version-linux-x86_64" -o "$w/bazel-$version"
+            echo "$sha  $w/bazel-$version" | sha256sum -c -
+            chmod 755 "$w/bazel-$version"
+            test "$("$w/bazel-$version" --version)" = "bazel $version"
+          done
+          git restore --source="$previous" --worktree -- qualification/build_test
+          test "$(git hash-object qualification/build_test/matrix.py)" = f8857049fec48a901a493e3eb227fa2d95a0d989
+          mkdir qualification/build_test/{tools,roles}
+          cp qualification/declared_build_test/defs.bzl qualification/build_test/tools/
+          cp qualification/declared_build_test/tools.BUILD qualification/build_test/tools/BUILD.bazel
+          cp qualification/declared_build_test/roles.BUILD qualification/build_test/roles/BUILD.bazel
+          cat >> qualification/build_test/MODULE.bazel <<'MODULE'
+          bazel_dep(name = "bazel_lib", version = "3.4.0")
+          applets = use_extension("@bazel_lib//lib:extensions.bzl", "toolchains")
+          use_repo(applets, "coreutils_linux_amd64", "coreutils_linux_arm64")
+          MODULE
+          curl -qfsSL --max-time 50 --retry 2 https://raw.githubusercontent.com/bazel-contrib/bazel-lib/v3.4.0/lib/private/coreutils_toolchain.bzl -o "$w/coreutils_toolchain.bzl"
+          test "$(git hash-object "$w/coreutils_toolchain.bzl")" = 6a1d6bd9ec39e898469066a5bb164e904332e8fe
+          if curl -qfsSL --max-time 50 -H 'Accept: application/octet-stream' https://api.github.com/repos/bazelbuild/buildtools/releases/assets/348132197 -o "$w/buildifier.download" && echo "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7  $w/buildifier.download" | sha256sum -c -; then
+            install -m755 "$w/buildifier.download" "$w/buildifier"
+          fi
+          cp qualification/build_test/matrix.py "$w/matrix.py"
+          cp qualification/declared_build_test/check.py "$w/declared.py"
+      - name: Check both tool roles, downstream failures, and the shell-free marker and test
+        timeout-minutes: 65
+        run: |
+          env -i HOME="$HOME" USER="$USER" PATH=/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 RUNNER_TEMP="$RUNNER_TEMP" GITHUB_SHA="$GITHUB_SHA" python3 -B "$RUNNER_TEMP/skylib-build-test/declared.py"
+      - name: Check the bounded results
+        id: limits
+        if: always() && !cancelled()
+        shell: python
+        run: |
+          import os, re
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'skylib-build-test/evidence'
+          assert (root/'result.json').is_file()
+          for path in root.iterdir():
+              assert path.is_file() and not path.is_symlink() and path.stat().st_size < 2 << 20
+              assert path.name in ('result.json','build_test_doc.md') or re.fullmatch(r'[0-9.]+-[a-z0-9]+-[a-z_]+-[a-z_]+-test[.](xml|log)',path.name)
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always() && steps.limits.outcome == 'success'
+        with:
+          name: skylib-declared-marker-runner
+          path: ${{ runner.temp }}/skylib-build-test/evidence/
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,5 @@
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+package(default_testonly = True)
+build_test(name = "marker_only", targets = ["//fixtures:public"], marker_tool = "//tools:touch")
+build_test(name = "runner_only", targets = ["//fixtures:public"], test_runner = "//tools:coreutils", args = ["true"])
+build_test(name = "negative", targets = ["//fixtures:public"], marker_tool = "//tools:touch", test_runner = "//tools:coreutils", args = ["false"], tags = ["manual"])
