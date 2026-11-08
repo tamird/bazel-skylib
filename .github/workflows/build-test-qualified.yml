@@ -1,0 +1,70 @@
+name: Verify build_test size and generated documentation
+on:
+  push:
+    branches: [qualification/skylib-effective-size]
+permissions: {}
+jobs:
+  linux:
+    if: github.repository == 'tamird/bazel-skylib' && github.actor == github.repository_owner && github.event.created && !github.event.deleted && github.run_attempt == 1
+    runs-on: ubuntu-22.04
+    timeout-minutes: 56
+    steps:
+      - name: Bind source, public input reader and canonical tools
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          w="$RUNNER_TEMP/skylib-build-test"
+          mkdir -m755 "$w" "$w/evidence"
+          echo '{"verified":false,"stage":"setup"}' > "$w/evidence/result.json"
+          product=8d2d8ea7944548e3d0f136155e5ff6b3e3ba20f4
+          prior=426072981a3c79e5afcc069591fdd6551e0a6ff8
+          original=966a5570b6d8c02b5cd9c92f780bf792d6540a31
+          proof=53f057e797aef70280c53ca051719246b5b0832d
+          git init -q .
+          git fetch -q --no-tags --no-auto-maintenance --depth=3 https://github.com/tamird/bazel-skylib.git "$GITHUB_SHA" "$original" "$proof" "$prior"
+          git checkout -q --detach "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$product"
+          test "$(git rev-parse HEAD^^)" = a920cdfe02154b916b493b4ffdd08087f0498fc7
+          test "$(git rev-parse "$product^{tree}")" = aa961ca8517d74f434bbc418373cecd8e12c823f
+          test "$(git diff --name-only "$prior" "$product")" = rules/build_test.bzl
+          test "$(git rev-parse "$prior^")" = "$(git rev-parse HEAD^^)"
+          test "$(git rev-parse "$proof^")" = 0220586c23a4be9825d90116b2da0eea68e5de04
+          git diff --exit-code "$product" HEAD -- . ':!.github/workflows/build-test-qualified.yml' ':!qualification/build_test_size.py'
+          git show "$original:qualification/build_test/matrix.py" > "$w/matrix.py"
+          test "$(git hash-object "$w/matrix.py")" = f8857049fec48a901a493e3eb227fa2d95a0d989
+          git show "$proof:qualification/build_test_docs.py" > "$w/proof.py"
+          test "$(git hash-object "$w/proof.py")" = 2e0f4fa9e36b0eb9476e2d6db46d4a841381735d
+          for spec in 'c3569a60dc1836ac6fad05e86d7951866c796b4f tldk_public_inputs.py tldk_public_inputs.py 1f3f7d4d75810ad60941772776e01f3b71b3b171' '7ea7ebc29e63bf98bc221f8419a34c6cb57e7003 recvbuf_deps.py public_assets.py 9a3f571087a1438113a3a067c300e26fcb0ca9e8'; do
+            read -r sha src dest blob <<< "$spec"
+            curl -qfsSL --max-time 45 --retry 2 "https://raw.githubusercontent.com/tamird/gvisor/$sha/.github/qualification/$src" -o "$w/$dest"
+            test "$(git hash-object "$w/$dest")" = "$blob"
+          done
+          curl -qfsSL --max-time 100 --retry 2 https://releases.bazel.build/8.5.0/release/bazel-8.5.0-linux-x86_64 -o "$w/bazel-8.5.0"
+          echo "18255229d933b8da10151bdef223a302744296b09af8af1988c93faa1ea3c71f  $w/bazel-8.5.0" | sha256sum -c -
+          curl -qfsSL --max-time 55 --retry 2 -H 'Accept: application/octet-stream' https://api.github.com/repos/bazelbuild/buildtools/releases/assets/348132197 -o "$w/buildifier"
+          echo "887377fc64d23a850f4d18a077b5db05b19913f4b99b270d193f3c7334b5a9a7  $w/buildifier" | sha256sum -c -
+          chmod 755 "$w/buildifier" "$w/bazel-8.5.0"
+          cp qualification/build_test_size.py "$w/check.py"
+          git checkout -q --detach "$product"
+      - name: Regenerate Stardoc and compare selected test sizes
+        timeout-minutes: 43
+        run: |
+          env -i HOME="$HOME" USER="$USER" PATH=/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 RUNNER_TEMP="$RUNNER_TEMP" GITHUB_SHA="$GITHUB_SHA" python3 -B "$RUNNER_TEMP/skylib-build-test/check.py"
+      - name: Check bounded evidence
+        id: limits
+        if: always() && !cancelled()
+        shell: python
+        run: |
+          import os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'skylib-build-test/evidence'
+          allow={'result.json','build_test_doc.md','docs-test.log','docs-test.xml'}
+          assert (root/'result.json').is_file()
+          assert all(p.name in allow and p.is_file() and not p.is_symlink() and 0<p.stat().st_size<2<<20 for p in root.iterdir())
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always() && steps.limits.outcome == 'success'
+        with:
+          name: skylib-effective-size
+          path: ${{ runner.temp }}/skylib-build-test/evidence/
+          if-no-files-found: error
+          retention-days: 14
