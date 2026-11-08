@@ -15,7 +15,11 @@ bzl_library(
 bzl_library(
     name = "build_test",
     srcs = ["build_test.bzl"],
-    deps = ["//lib:new_sets"],
+    deps = [
+        ":native_binary",
+        ":run_binary",
+        "//lib:new_sets",
+    ],
 )
 
 bzl_library(

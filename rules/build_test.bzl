@@ -15,6 +15,8 @@
 """A test verifying other targets build as part of a `bazel test`"""
 
 load("//lib:new_sets.bzl", "sets")
+load(":native_binary.bzl", "native_test")
+load(":run_binary.bzl", "run_binary")
 
 def _empty_test_impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
@@ -50,7 +52,7 @@ _GENRULE_ATTRS = [
     "target_compatible_with",
 ]
 
-def build_test(name, targets, **kwargs):
+def build_test(name, targets, marker_tool = None, test_runner = None, **kwargs):
     """Test rule checking that other targets build.
 
     This works not by an instance of this test failing, but instead by
@@ -72,6 +74,11 @@ def build_test(name, targets, **kwargs):
     Args:
       name: The name of the test rule.
       targets: A list of targets to ensure build.
+      marker_tool: Optional execution-platform tool that creates an empty file
+        at the path passed as its only argument.
+      test_runner: Optional target-platform executable to run with the test
+        arguments once the checked targets build. Set the native_test `out`
+        attribute if the executable needs a specific name.
       **kwargs: The [common attributes for tests](https://bazel.build/reference/be/common-definitions#common-attributes-tests).
     """
     if len(targets) == 0:
@@ -82,8 +89,8 @@ def build_test(name, targets, **kwargs):
     # Remove any duplicate test targets.
     targets = sets.to_list(sets.make(targets))
 
-    # Use a genrule to ensure the targets are built (works because it forces
-    # the outputs of the other rules on as data for the genrule)
+    # Each marker depends on the checked default outputs. Consumers that take
+    # only this test's runfiles must still build those outputs.
 
     # Split into batches to hopefully avoid things becoming so large they are
     # too much for a remote execution set up.
@@ -106,19 +113,27 @@ def build_test(name, targets, **kwargs):
     for idx, batch in enumerate([targets[i:i + batch_size] for i in range(0, len(targets), batch_size)]):
         full_name = "{name}_{idx}__deps".format(name = name, idx = idx)
         test_data.append(full_name)
-        native.genrule(
+        out = full_name + ".out"
+        common = dict(
             name = full_name,
             srcs = batch,
-            outs = [full_name + ".out"],
+            outs = [out],
             testonly = 1,
             visibility = ["//visibility:private"],
-            cmd = "touch $@",
-            cmd_bat = "type nul > $@",
             tags = genrule_tags,
             **genrule_args
         )
+        if marker_tool == None:
+            native.genrule(cmd = "touch $@", cmd_bat = "type nul > $@", **common)
+        else:
+            run_binary(tool = marker_tool, args = ["$(execpath :{})".format(out)], **common)
 
-    _empty_test(
+    test = _empty_test
+    if test_runner != None:
+        test = native_test
+        kwargs["src"] = test_runner
+
+    test(
         name = name,
         data = test_data,
         size = kwargs.pop("size", "small"),  # Default to small for test size
