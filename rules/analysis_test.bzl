@@ -14,9 +14,11 @@
 
 """A test verifying other targets can be successfully analyzed as part of a `bazel test`"""
 
-def _analysis_test_impl(ctx):
+# TODO(https://github.com/bazelbuild/bazel/issues/32086): Use a native return
+# annotation once supported Bazel versions recognize AnalysisTestResultInfo.
+def _analysis_test_impl(_ctx):
+    # type: (...) -> list[AnalysisTestResultInfo]
     """Implementation function for analysis_test. """
-    _ignore = [ctx]  # @unused
     return [AnalysisTestResultInfo(
         success = True,
         message = "All targets succeeded analysis",
@@ -27,6 +29,12 @@ analysis_test = rule(
     attrs = {"targets": attr.label_list(mandatory = True)},
     test = True,
     analysis_test = True,
+    exec_groups = {
+        # The default test exec groups limits test execution to an execution platform that matches
+        # the target platform's constraints. But the action Bazel uses to render the result of the
+        # test supports any platform, so we override this exec group to have no requirements.
+        "test": exec_group(),
+    },
     doc = """Test rule checking that other targets can be successfully analyzed.
 
     This rule essentially verifies that all targets under `targets` would
